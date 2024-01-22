@@ -38,7 +38,7 @@ A Task Management Dashboard for the AI product Teachmate (https://teachmateai.co
 
 6. Start the development server:
 
-   - Open a new terminal and type in the code below
+Open a new terminal and type in the code below
 
     ```
     npm run dev

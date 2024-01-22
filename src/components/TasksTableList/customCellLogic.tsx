@@ -4,6 +4,7 @@ import { completeTask, deleteTask, editTask } from "@/state/taskSlice";
 import { deleteDoc, doc, setDoc } from "@firebase/firestore";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from 'react-toastify';
 
 interface Task {
     id: string;
@@ -20,6 +21,11 @@ export const useCellLogic = (task: Task) => {
   
     const dispatch: AppDispatch = useDispatch();
     const tasks = useSelector((state: RootState) => state.tasks.list);
+
+    const success = () => toast.success("Successfully edited task!");
+    const failed = () => toast.error("Failed to edit task, try again!");
+    const deleted = () => toast.success("Task Deleted");
+    const stubborn = () => toast.error("Failed to delete task, try again!")
   
     const handleEdit = () => {
       setTitle(task.title);
@@ -32,9 +38,14 @@ export const useCellLogic = (task: Task) => {
         const docRef = doc(db, "Tasks", task.id);
         await deleteDoc(docRef);
         dispatch(deleteTask(task.id));
-        console.log("Document deleted successfully!");
+
+        // delete success message
+        deleted()
       } catch (e) {
         console.error("Error deleting document: ", e);
+
+        // delete failed message
+        stubborn()
       }
     };
   
@@ -50,6 +61,9 @@ export const useCellLogic = (task: Task) => {
   
         await setDoc(docRef, editedTask);
         console.log("Document updated successfully!");
+
+        // success message
+        success()
   
         dispatch(editTask(editedTask));
   
@@ -58,6 +72,8 @@ export const useCellLogic = (task: Task) => {
         setDate(undefined);
       } catch (e) {
         console.error("Error updating document: ", e);
+        // error message
+        failed()
       }
     };
   

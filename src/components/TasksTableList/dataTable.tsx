@@ -27,26 +27,30 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import React from "react";
+import React, { useState } from "react";
 import { columns, Tasks } from "./columns";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDispatch } from "react-redux";
 import { completeTask, deleteTask } from "@/state/taskSlice";
+import { toast } from 'react-toastify';
 
 interface DataTableDemoProps {
   data: Tasks[];
 }
 
 export function DataTableDemo({ data }: DataTableDemoProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = useState({});
+
+  const marked = () => toast.success("Marked tasks as completed!");
+  const deleted = () => toast.success("Deleted tasks!");
 
   // access to redux reducers
   const dispatch = useDispatch();
@@ -76,6 +80,9 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
       .getFilteredSelectedRowModel()
       .rows.map((row) => row.original.id);
     selectedTaskIds.forEach((taskId) => dispatch(deleteTask(taskId) as any));
+
+    // deleted successful message
+    deleted()
   };
 
   // mark selected text as completed
@@ -84,11 +91,14 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
       .getFilteredSelectedRowModel()
       .rows.map((row) => row.original.id);
     selectedTaskIds.forEach((taskId) => dispatch(completeTask(taskId) as any));
+
+    // marked successful message
+    marked()
   };
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Filter task by status..."
           value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
@@ -101,7 +111,7 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto bg-orange hover:bg-orange/80 text-black">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -113,7 +123,7 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className="capitalize font-semibold"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
@@ -185,6 +195,7 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
           <Button
             variant="outline"
             size="sm"
+            className="font-semibold bg-purple hover:bg-purple/80 text-white"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -193,6 +204,7 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
           <Button
             variant="outline"
             size="sm"
+            className="font-semibold bg-purple hover:bg-purple/80 text-white"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
@@ -201,11 +213,11 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
         </div>
       </div>
       {table.getFilteredSelectedRowModel().rows.length > 0 && (
-        <div className="flex flex-wrap justify-center items-center space-x-2 space-y-2">
-          <Button variant="outline" size="sm" onClick={handleDeleteSelected}>
+        <div className="flex flex-col sm:flex-row gap-3 flex-wrap justify-center items-center">
+          <Button variant="outline" size="sm" className="font-semibold bg-purple hover:bg-purple/80 text-white" onClick={handleDeleteSelected}>
             Delete Selected
           </Button>
-          <Button variant="outline" size="sm" onClick={handleCompleteSelected}>
+          <Button variant="outline" size="sm" className="font-semibold bg-purple hover:bg-purple/80 text-white" onClick={handleCompleteSelected}>
             Mark as Completed
           </Button>
         </div>

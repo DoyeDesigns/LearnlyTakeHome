@@ -30,12 +30,16 @@ import { cn } from "@/lib/utils";
 import { addDays, format } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { addTask } from "@/state/taskSlice";
-import store, { RootState, AppDispatch } from "@/state/store";
+import { RootState, AppDispatch } from "@/state/store";
+import { toast } from 'react-toastify';
 
 export default function CreateTask() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState<Date>();
+
+  const success = () => toast.success("Successfully created task!");
+  const failed = () => toast.error("Failed to create task, try again!");
 
   //access redux store
   const dispatch: AppDispatch = useDispatch();
@@ -58,6 +62,10 @@ export default function CreateTask() {
 
       console.log("Document added successfully");
 
+      // success notification messagge
+      success()
+      
+
       // Retrieve the DocumentSnapshot for the added document
       const docSnap = await getDoc(addedDocRef);
 
@@ -78,6 +86,8 @@ export default function CreateTask() {
       setDate(undefined);
     } catch (e) {
       console.error("Error adding document: ", e);
+      // failed notification message
+      failed()
     }
   };
 
@@ -88,10 +98,10 @@ export default function CreateTask() {
 
   return (
     <div className="max-w-3xl mx-auto flex justify-between items-center px-8 mt-10">
-      <h1 className="text-2xl">TeachMate<span>AI</span></h1>
+      <h1 className="text-2xl font-semibold text-purple">TeachMate<span className="font-semibold text-orange">AI</span><span className="text-sm ml-1 text-black">Task manager</span></h1>
       <Dialog>
         <DialogTrigger>
-          <Button variant="outline">Create new task</Button>
+          <Button className="font-semibold bg-purple hover:bg-purple/80 text-white">Create new task</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -170,7 +180,7 @@ export default function CreateTask() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" onClick={() => handleCreateTask()}>
+            <Button type="submit" className="font-semibold bg-purple hover:bg-purple/80 text-white" onClick={() => handleCreateTask()}>
               Add task
             </Button>
           </DialogFooter>
