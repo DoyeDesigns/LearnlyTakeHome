@@ -7,6 +7,12 @@ A Task Management Dashboard for the AI product Teachmate (https://teachmateai.co
 
 - [Getting Started](#getting-started)
   - [Installation](#installation)
+- [Dependencies used](#dependencies-used)
+- [Design thought process](#design-thought-process)
+  - [Backend and Data](#backend-and-data)
+  - [UI and Components](#ui-and-components)
+  - [State Management](#state-management)
+  - [Focus](#focus)
 
 ## Getting Started
 
@@ -34,9 +40,9 @@ A Task Management Dashboard for the AI product Teachmate (https://teachmateai.co
 
    - Open a new terminal and type in the code below
 
-     ```
-     npm run dev
-     ```
+    ```
+    npm run dev
+    ```
 
 The frontend development server will run on `http://localhost:3000`.
 
@@ -60,7 +66,7 @@ The frontend development server will run on `http://localhost:3000`.
 ### State Management
 - Reduxjs/toolkit: This toolkit simplifies state management in React applications. It likely helps manage changes to your task data, such as adding, editing, or marking tasks complete, and ensures consistent updates across the UI.
 
-#### Overall, you chose tools focused on:
+### Overall, I chose tools focused on:
 - Scalability and ease of use: Firebase for efficient data storage and management.
 - Accessible and customizable UI: Radix UI for building consistent and easy-to-use components.
 - Flexible data visualization: React Table for efficient and organized task display.
