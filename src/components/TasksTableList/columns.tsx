@@ -99,83 +99,95 @@ export const MyCellComponent: React.FC<{
       </DropdownMenu>
 
       {/* edit task popup dialog */}
-
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit {task.id}</DialogTitle>
-          <DialogDescription>
-            Edit task. Click &apos;Save Changes&apos; when you&apos;re done.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="grid gap-4 py-4">
-          <div>
-            <Label htmlFor="title" className="mb-5">
-              Title
-            </Label>
-            <Input
-              id="title"
-              placeholder="Name of task"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+      <form>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit {task.title}</DialogTitle>
+            <DialogDescription>
+              Edit task. Click &apos;Save Changes&apos; when you&apos;re done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="title" className="mb-5">
+                Title
+              </Label>
+              <Input
+                id="title"
+                placeholder="Name of task"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="description" className="mb-5">
+                Your Message
+              </Label>
+              <Textarea
+                placeholder="Type your task details here."
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Popover>
+                <p className="text-sm">Due date for task completion</p>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="due-date"
+                    variant={"outline"}
+                    className={cn(
+                      "w-[280px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Select due date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
+                  <Select
+                    onValueChange={(value: string) =>
+                      setDate(addDays(new Date(), parseInt(value)))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      <SelectItem value="0">Today</SelectItem>
+                      <SelectItem value="1">Tomorrow</SelectItem>
+                      <SelectItem value="3">In 3 days</SelectItem>
+                      <SelectItem value="7">In a week</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="rounded-md border">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      required
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="description" className="mb-5">
-              Your Message
-            </Label>
-            <Textarea
-              placeholder="Type your task details here."
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <div>
-            <Popover>
-              <p className="text-sm">Change due date for task completion</p>
-              <PopoverTrigger asChild>
-                <Button
-                  id="due-date"
-                  variant={"outline"}
-                  className={cn(
-                    "w-[280px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Select due date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                <Select
-                  onValueChange={(value: string) =>
-                    setDate(addDays(new Date(), parseInt(value)))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="0">Today</SelectItem>
-                    <SelectItem value="1">Tomorrow</SelectItem>
-                    <SelectItem value="3">In 3 days</SelectItem>
-                    <SelectItem value="7">In a week</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="rounded-md border">
-                  <Calendar mode="single" selected={date} onSelect={setDate} />
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="button" className="bg-purple text-white font-semibold hover:bg-purple/80" onClick={() => handleEditedChanges()}>
-            Save Changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+          <DialogFooter>
+            <Button
+              type="submit"
+              className="bg-purple text-white font-semibold hover:bg-purple/80"
+              disabled={!title || !description || !date}
+              onClick={() => handleEditedChanges()}
+            >
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 };
