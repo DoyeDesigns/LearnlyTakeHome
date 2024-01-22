@@ -97,7 +97,7 @@ export default function CreateTask() {
           <DialogHeader>
             <DialogTitle>New Task</DialogTitle>
             <DialogDescription>
-              Create a new task. Click 'Add task' when you're done.
+              Create a new task. Click &apos;Add task&apos; when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

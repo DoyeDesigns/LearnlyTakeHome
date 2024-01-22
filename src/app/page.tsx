@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image";
 import DemoPage from "@/components/TasksTableList/tasksTable";
 import CreateTask from "@/components/createTask";
 import store from "@/state/store";

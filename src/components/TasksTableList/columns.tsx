@@ -23,8 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { db } from "@/config/firebase";
-import { doc, setDoc, deleteDoc } from "@firebase/firestore";
 import { Textarea } from "../ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
@@ -35,18 +33,10 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Calendar } from "../ui/calendar";
-import { useEffect, useState } from "react";
 import { addDays, format } from "date-fns";
 import { cn } from "@/lib/utils";
-
-import {
-  completeTask,
-  deleteTask,
-  editTask,
-  fetchTasks,
-} from "@/state/taskSlice";
-import { RootState, AppDispatch } from "@/state/store";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import {useCellLogic} from "./customCellLogic";
 
 export type Tasks = {
   id: string;
@@ -56,156 +46,25 @@ export type Tasks = {
   date: Date | undefined;
 };
 
-export const columns: ColumnDef<Tasks>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="p-0"
-        >
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "title",
-    header: "Title",
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-  },
-  {
-    accessorKey: "date",
-    header: () => <div>Due date</div>,
-    cell: ({ row }) => {
-      const date = row.getValue("date") as Date;
+export const MyCellComponent: React.FC<{ row: any; column: any; table: any }> = (
+  { row }
+) => {
+  const task = row.original;
+  const {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    date,
+    setDate,
+    handleEdit,
+    handleDelete,
+    handleEditedChanges,
+    handleCompleteTask,
+  } = useCellLogic(task);
 
-      console.log("Original Date:", date);
-
-      // Checking if date is a valid Date object
-      if (date instanceof Date && !isNaN(date.getTime())) {
-        // Formating the date
-        const formattedDate = new Intl.DateTimeFormat("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        }).format(date);
-
-        return <div className="font-medium">{formattedDate}</div>;
-      } else {
-        // Handling the case where the date is not a valid Date object
-        return <div className="font-medium">Invalid Date</div>;
-      }
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const task = row.original;
-      const [isDialogOpen, setDialogOpen] = useState(false);
-      const [title, setTitle] = useState("");
-      const [description, setDescription] = useState("");
-      const [date, setDate] = useState<Date>();
-
-      const dispatch: AppDispatch = useDispatch();
-      const tasks = useSelector((state: RootState) => state.tasks.list);
-
-      // populating inputs with current task information
-      const handleEdit = () => {
-        setTitle(task.title);
-        setDescription(task.description);
-        setDate(task.date);
-      };
-
-      // deleting a task
-      const handleDelete = async () => {
-        try {
-          const docRef = doc(db, "Tasks", task.id); // Assuming `id` is the document ID
-          await deleteDoc(docRef);
-          dispatch(deleteTask(task.id));
-          console.log("Document deleted successfully!");
-        } catch (e) {
-          console.error("Error deleting document: ", e);
-        }
-      };
-
-      // save edited changes function
-      const handleEditedChanges = async () => {
-        try {
-          const docRef = doc(db, "Tasks", task.id);
-          const editedTask = {
-            id: task.id,
-            title: title,
-            description: description,
-            date: date,
-          };
-
-          // updating firebase data
-          await setDoc(docRef, editedTask);
-          console.log("Document updated successfully!");
-
-          // updating redux state
-          dispatch(editTask(editedTask));
-
-          // Reseting form values after successful update
-          setTitle("");
-          setDescription("");
-          setDate(undefined);
-        } catch (e) {
-          console.error("Error updating document: ", e);
-        }
-      };
-
-      const handleCompleteTask = async (taskId: string) => {
-        try {
-          // updating status state of task
-          await dispatch(completeTask(taskId));
-        } catch (error) {
-          console.error("Error completing task: ", error);
-        }
-      };
-
-      // Logic to handle state changes, e.g., re-rendering the component
-      useEffect(() => {
-        console.log("Tasks have been updated:", tasks);
-      }, [tasks]);
-
-      return (
-        <Dialog>
+  return (
+    <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -243,7 +102,7 @@ export const columns: ColumnDef<Tasks>[] = [
             <DialogHeader>
               <DialogTitle>Edit {task.id}</DialogTitle>
               <DialogDescription>
-                Edit task. Click 'Save Changes' when you're done.
+                Edit task. Click &apos;Save Changes&apos; when you&apos;re done.
               </DialogDescription>
             </DialogHeader>
 
@@ -324,7 +183,87 @@ export const columns: ColumnDef<Tasks>[] = [
             </DialogFooter>
           </DialogContent>
         </Dialog>
+  );
+};
+
+export const columns: ColumnDef<Tasks>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value: any) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0"
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
     },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("status")}</div>
+    ),
   },
+  {
+    accessorKey: "title",
+    header: "Title",
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+  },
+  {
+    accessorKey: "date",
+    header: () => <div>Due date</div>,
+    cell: ({ row }) => {
+      const date = row.getValue("date") as Date;
+
+      console.log("Original Date:", date);
+
+      // Checking if date is a valid Date object
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        // Formating the date
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }).format(date);
+
+        return <div className="font-medium">{formattedDate}</div>;
+      } else {
+        // Handling the case where the date is not a valid Date object
+        return <div className="font-medium">Invalid Date</div>;
+      }
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: MyCellComponent,
+    },
 ];
