@@ -97,10 +97,12 @@ export default function CreateTask() {
 
   return (
     <div className="max-w-3xl mx-auto flex justify-between items-center px-8 mt-10">
+      <div className="flex flex-col gap-1 sm:flex-row">
       <h1 className="text-2xl font-semibold text-purple">
         TeachMate<span className="font-semibold text-orange">AI</span>
-        <span className="text-sm ml-1 text-black">Task manager</span>
       </h1>
+      <span className="text-sm text-black">Task manager</span>
+      </div>
       <Dialog>
         <DialogTrigger>
           <Button className="font-semibold bg-purple hover:bg-purple/80 text-white">
