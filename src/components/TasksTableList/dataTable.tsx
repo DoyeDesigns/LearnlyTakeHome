@@ -104,7 +104,6 @@ export function DataTableDemo({ data }: DataTableDemoProps) {
           value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
             const filterValue = event.target.value;
-            // table.getColumn("title")?.setFilterValue(filterValue);
             table.getColumn("status")?.setFilterValue(filterValue);
           }}
           className="max-w-sm"

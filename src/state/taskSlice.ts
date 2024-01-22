@@ -9,6 +9,10 @@ import {
   getDoc,
 } from "@firebase/firestore";
 import { RootState } from "./store";
+import { toast } from "react-toastify";
+
+const success = () => toast.success("Task completed!");
+const failed = () => toast.error("Failed to mark task as completed!");
 
 interface Task {
   id: string;
@@ -84,6 +88,8 @@ export const completeTask = createAsyncThunk(
         // Document exists, proceed with the update
         await updateDoc(docRef, { status: "completed" });
 
+        success()
+
         return taskId;
       } else {
         // Document doesn't exist
@@ -91,6 +97,7 @@ export const completeTask = createAsyncThunk(
       }
     } catch (error) {
       console.error("Error completing task: ", error);
+      failed()
     }
   }
 );

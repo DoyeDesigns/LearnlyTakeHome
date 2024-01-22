@@ -97,7 +97,7 @@ export default function CreateTask() {
 
   return (
     <div className="max-w-3xl mx-auto flex justify-between items-center px-8 mt-10">
-      <div className="flex flex-col gap-1 sm:flex-row content-end">
+      <div className="flex items-center flex-col gap-1 sm:flex-row">
       <h1 className="text-2xl font-semibold text-purple">
         TeachMate<span className="font-semibold text-orange">AI</span>
       </h1>

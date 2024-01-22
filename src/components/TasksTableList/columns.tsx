@@ -231,18 +231,18 @@ export const columns: ColumnDef<Tasks>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-      // Check the type of status before rendering
-      const statusContent =
-        typeof status === "string" ? (
-          <div className={`lowercase ${getStatusColorClass(status)}`}>
-            {status}
-          </div>
-        ) : null;
+    // cell: ({ row }) => {
+    //   const status = row.getValue("status");
+    //   // Check the type of status before rendering
+    //   const statusContent =
+    //     typeof status === "string" ? (
+    //       <div className={`lowercase ${getStatusColorClass(status)}`}>
+    //         {status}
+    //       </div>
+    //     ) : null;
 
-      return statusContent;
-    },
+    //   return statusContent;
+    // },
   },
   {
     accessorKey: "title",
