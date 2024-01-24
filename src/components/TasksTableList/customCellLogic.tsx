@@ -1,7 +1,7 @@
 import { db } from "@/config/firebase";
 import { AppDispatch, RootState } from "@/state/store";
 import { completeTask, deleteTask, editTask } from "@/state/taskSlice";
-import { deleteDoc, doc, setDoc } from "@firebase/firestore";
+import { deleteDoc, doc, setDoc, updateDoc } from "@firebase/firestore";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
@@ -59,7 +59,7 @@ export const useCellLogic = (task: Task) => {
           date: date,
         };
   
-        await setDoc(docRef, editedTask);
+        await updateDoc(docRef, editedTask);
         console.log("Document updated successfully!");
 
         // success message
